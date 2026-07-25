@@ -155,11 +155,48 @@ def build_source(config, versions):
     return document
 
 
+# AltStore's decoder declares these non-optional. A missing key makes clients
+# reject the entire document with an unhelpful "data couldn't be read" error,
+# so fail here instead, where the cause is obvious.
+REQUIRED_SOURCE_KEYS = ("name", "identifier", "apps")
+REQUIRED_APP_KEYS = (
+    "name",
+    "bundleIdentifier",
+    "developerName",
+    "localizedDescription",
+    "iconURL",
+    "versions",
+)
+REQUIRED_VERSION_KEYS = ("version", "date", "downloadURL", "size")
+
+
+def validate(document):
+    missing = [k for k in REQUIRED_SOURCE_KEYS if not document.get(k)]
+    if missing:
+        fail(f"source is missing required key(s): {', '.join(missing)}")
+
+    for app in document["apps"]:
+        missing = [k for k in REQUIRED_APP_KEYS if not app.get(k)]
+        if missing:
+            fail(
+                f"app {app.get('bundleIdentifier', '?')} is missing required "
+                f"key(s): {', '.join(missing)} — set them in source-config.json"
+            )
+        for version in app["versions"]:
+            missing = [k for k in REQUIRED_VERSION_KEYS if version.get(k) in (None, "")]
+            if missing:
+                fail(
+                    f"version {version.get('version', '?')} is missing required "
+                    f"key(s): {', '.join(missing)}"
+                )
+
+
 def main():
     config = load_config()
     releases = fetch_releases(config["repo"])
     versions = build_versions(releases, config)
     document = build_source(config, versions)
+    validate(document)
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as handle:
         json.dump(document, handle, indent=2, ensure_ascii=False)
