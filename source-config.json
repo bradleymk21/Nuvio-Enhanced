@@ -10,7 +10,7 @@
 
   "repo": "luqmanfadlli/NuvioMobile-iOS",
   "assetPattern": "*-Enhanced.ipa",
-  "maxVersions": 5,
+  "maxVersions": 3,
   "includePrereleases": false,
 
   "app": {
