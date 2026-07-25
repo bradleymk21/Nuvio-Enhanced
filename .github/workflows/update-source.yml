@@ -2,7 +2,9 @@ name: Update AltStore source
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    # Every 6 hours. GitHub delays scheduled runs under load, so treat the
+    # times as approximate.
+    - cron: "0 */6 * * *"
   workflow_dispatch:
   push:
     paths:
@@ -39,10 +41,26 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           if [ -n "$(git status --porcelain apps.json)" ]; then
             git add apps.json
             git commit -m "Update apps.json"
             git push
-          else
-            echo "apps.json unchanged"
+            echo "published an update"
+            exit 0
+          fi
+
+          echo "apps.json unchanged"
+
+          # GitHub disables scheduled workflows after 60 days without a commit.
+          # If upstream goes quiet that long, the automation would switch itself
+          # off silently, so leave a heartbeat well before the deadline.
+          age_days=$(( ( $(date -u +%s) - $(git log -1 --format=%ct) ) / 86400 ))
+          echo "days since last commit: $age_days"
+          if [ "$age_days" -ge 25 ]; then
+            date -u +"%Y-%m-%dT%H:%M:%SZ" > .last-checked
+            git add .last-checked
+            git commit -m "Heartbeat: keep scheduled workflow enabled"
+            git push
+            echo "heartbeat committed"
           fi
