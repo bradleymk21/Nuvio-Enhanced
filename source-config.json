@@ -1,0 +1,28 @@
+{
+  "source": {
+    "name": "Nuvio Enhanced",
+    "identifier": "com.bradleymk21.nuvio-enhanced",
+    "subtitle": "Automatic updates for Nuvio Enhanced",
+    "description": "Personal AltStore/Feather source tracking Nuvio Enhanced releases.",
+    "website": "https://github.com/bradleymk21/Nuvio-Enhanced",
+    "tintColor": "#6C5CE7"
+  },
+
+  "repo": "luqmanfadlli/NuvioMobile-iOS",
+  "assetPattern": "*-Enhanced.ipa",
+  "maxVersions": 5,
+  "includePrereleases": false,
+
+  "app": {
+    "name": "Nuvio Enhanced",
+    "bundleIdentifier": "com.nuvio.media",
+    "developerName": "Nuvio",
+    "subtitle": "Media app, enhanced build",
+    "localizedDescription": "Enhanced build of Nuvio, packaged for sideloading.",
+    "iconURL": "",
+    "tintColor": "#6C5CE7",
+    "category": "entertainment",
+    "minOSVersion": "16.1",
+    "screenshots": []
+  }
+}
