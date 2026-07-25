@@ -36,11 +36,20 @@ Everything lives in `source-config.json`:
 
 ### Notes
 
-`assetPattern` is deliberately `*-Enhanced.ipa` rather than `*.ipa`, because each
-upstream release also ships a `-Full.ipa` variant. A looser pattern would pick
-whichever GitHub happened to return first.
+Upstream is [yesnt10/NuvioMobile-Enhanced](https://github.com/yesnt10/NuvioMobile-Enhanced),
+which ships `com.nuvio.enhanced` under the app name **Nuvio Enhanced**.
 
-Releases before `0.2.18` predate the Enhanced IPA and are skipped with a log line.
+Do not confuse it with [luqmanfadlli/NuvioMobile-iOS](https://github.com/luqmanfadlli/NuvioMobile-iOS),
+a separate project that also calls one of its variants "Enhanced" but ships
+`com.nuvio.media` under the app name **Nuvio**. The two are different apps with
+different features, and their own release notes say so.
+
+Asset naming upstream is inconsistent (`Nuvio-Enhanced-`, `NuvioEnhanced-`,
+`Nuvio-`), but each release contains exactly one `.ipa`, so `*.ipa` is safe here.
+
+`buildVersion` is parsed out of the tag (`enhanced-v0.3.1-build102` → `102`).
+It matters because two releases can share a marketing version — `0.2.23` exists
+as both build 97 and build 98 — and the build number is what distinguishes them.
 
 ## Requirements
 

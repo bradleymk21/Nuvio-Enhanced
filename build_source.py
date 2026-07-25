@@ -19,6 +19,9 @@ OUTPUT_PATH = os.path.join(HERE, "apps.json")
 
 API = "https://api.github.com/repos/{repo}/releases?per_page=100"
 VERSION_RE = re.compile(r"\d+(?:\.\d+)*")
+# Upstream tags look like "enhanced-v0.3.1-build102". Two releases can share a
+# marketing version, so the build number is what tells them apart.
+BUILD_RE = re.compile(r"build[-_]?(\d+)", re.IGNORECASE)
 DESCRIPTION_LIMIT = 2000
 
 
@@ -98,8 +101,9 @@ def build_versions(releases, config):
             continue
 
         notes = (release.get("body") or "").strip()
+        tag = release.get("tag_name") or ""
         entry = {
-            "version": version_from_tag(release.get("tag_name")),
+            "version": version_from_tag(tag),
             "date": normalize_date(asset.get("created_at") or release.get("published_at")),
             "localizedDescription": notes[:DESCRIPTION_LIMIT],
             "downloadURL": asset["browser_download_url"],
@@ -107,6 +111,11 @@ def build_versions(releases, config):
         }
         if min_os:
             entry["minOSVersion"] = min_os
+
+        build_match = BUILD_RE.search(tag)
+        if build_match:
+            entry["buildVersion"] = build_match.group(1)
+
         versions.append(entry)
 
     if not versions:
