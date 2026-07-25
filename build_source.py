@@ -127,7 +127,6 @@ def build_source(config, versions):
         "subtitle": app.get("subtitle", ""),
         "localizedDescription": app.get("localizedDescription", ""),
         "category": app.get("category", "entertainment"),
-        "screenshots": app.get("screenshots", []),
         "versions": versions,
         # Mirror the newest version at the top level for older clients.
         "version": versions[0]["version"],
@@ -139,6 +138,12 @@ def build_source(config, versions):
     for key in ("iconURL", "tintColor"):
         if app.get(key):
             entry[key] = app[key]
+
+    # Feather decodes "screenshots" as a keyed iphone/ipad object and throws on
+    # an array, which kills the whole document. The array form is screenshotURLs.
+    shots = app.get("screenshotURLs") or []
+    if shots:
+        entry["screenshotURLs"] = shots
 
     document = {
         "name": source.get("name", "Source"),
@@ -182,6 +187,13 @@ def validate(document):
                 f"app {app.get('bundleIdentifier', '?')} is missing required "
                 f"key(s): {', '.join(missing)} — set them in source-config.json"
             )
+        # Feather decodes this as a keyed iphone/ipad object, not an array.
+        if "screenshots" in app and not isinstance(app["screenshots"], dict):
+            fail(
+                "app screenshots must be an object keyed by iphone/ipad; "
+                "use screenshotURLs for a plain list"
+            )
+
         for version in app["versions"]:
             missing = [k for k in REQUIRED_VERSION_KEYS if version.get(k) in (None, "")]
             if missing:
@@ -189,6 +201,12 @@ def validate(document):
                     f"version {version.get('version', '?')} is missing required "
                     f"key(s): {', '.join(missing)}"
                 )
+
+    # News entries need all three or Feather rejects the document.
+    for item in document.get("news", []):
+        missing = [k for k in ("identifier", "title", "caption") if not item.get(k)]
+        if missing:
+            fail(f"news item is missing required key(s): {', '.join(missing)}")
 
 
 def main():

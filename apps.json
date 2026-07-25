@@ -12,7 +12,6 @@
       "subtitle": "Media app, enhanced build",
       "localizedDescription": "Enhanced build of Nuvio, packaged for sideloading.",
       "category": "entertainment",
-      "screenshots": [],
       "versions": [
         {
           "version": "0.3.1",
