@@ -51,6 +51,22 @@ Asset naming upstream is inconsistent (`Nuvio-Enhanced-`, `NuvioEnhanced-`,
 It matters because two releases can share a marketing version — `0.2.23` exists
 as both build 97 and build 98 — and the build number is what distinguishes them.
 
+## Installing and updating in Feather
+
+The app bundles an extension, `PlugIns/DownloadsWidgetExtension.appex`
+(`com.nuvio.enhanced.DownloadsWidgetExtension`). Extensions need their own App ID
+and provisioning profile, which fails on a free 7-day certificate. The install
+then dies partway and leaves a grey placeholder icon with a cloud badge — no
+app icon, and it never launches.
+
+Fix: in Feather's signing options open **Frameworks & PlugIns** and toggle
+`PlugIns/DownloadsWidgetExtension.appex` for removal before signing. The only
+loss is the home-screen downloads widget.
+
+This applies to **every** update, since Feather re-signs each new build. If an
+update leaves a grey placeholder, delete it and re-sign with the extension
+removed — the source is not at fault.
+
 ## Requirements
 
 Repository **Settings → Actions → General → Workflow permissions** must be set to
