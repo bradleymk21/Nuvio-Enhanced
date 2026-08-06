@@ -19,8 +19,10 @@ OUTPUT_PATH = os.path.join(HERE, "apps.json")
 
 API = "https://api.github.com/repos/{repo}/releases?per_page=100"
 VERSION_RE = re.compile(r"\d+(?:\.\d+)*")
-# Upstream tags look like "enhanced-v0.3.1-build102". Two releases can share a
-# marketing version, so the build number is what tells them apart.
+# Optional. Current upstream tags are bare versions ("0.4.2") with no build
+# number, so buildVersion is left off — every tag so far is a distinct marketing
+# version, which is enough for clients to order releases. The pattern stays for
+# tag schemes that do carry one, like the old "enhanced-v0.3.1-build102".
 BUILD_RE = re.compile(r"build[-_]?(\d+)", re.IGNORECASE)
 DESCRIPTION_LIMIT = 2000
 
